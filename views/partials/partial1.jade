@@ -1,1 +1,113 @@
-p This is the partial for view 1.
+doctype html
+html(lang='en')
+  head
+    title Google Book library
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    
+    
+  body
+    div
+      .container-fluid.outerdiv
+        nav.navbar.navbar-inverse.navbar-fixed-top
+          .container-fluid
+            .navbar-header
+              a.navbar-brand(href='#')
+                b Google Books
+                span.span-style library
+        noscript
+          .nojs
+            | Javascript is either disabled or not supported in your browser. Please enable it or use a Javascript enabled browser.
+        .animated.zoomInRight
+          .input-group.search-bar
+            input.form-control(type='text', ng-model='search', ng-model-options='{ debounce: 800 }', onclick='select()', placeholder='Enter book title', autofocus='')
+            span.input-group-addon.bar-style
+              i.glyphicon.glyphicon-search
+          div(ng-if='bookInfo')
+            #main-info.col-sm-8
+              img.thumbnail.animated.flip.movie-poster(ng-src='{{bookInfo.imageLinks.smallThumbnail}}')
+              span.span-outer
+                a(href='https://books.google.com/{{ bookInfo.previewLink }}', target='_blank') {{bookInfo.title}}
+              | , {{bookInfo.Year}}
+              p
+                strong Publisher:
+                |  {{bookInfo.publisher}}
+                br
+                strong Published Date:
+                |  {{bookInfo.publishedDate}}
+              p {{bookInfo.description}}
+              p.outer-p
+                .inner-p
+                  span.label.label-primary Authors :
+                  span(ng-repeat='author in bookInfo.authors') {{author}},
+                .inner-p
+                  span.label.label-primary Categories :
+                  span(ng-repeat='categories in bookInfo.categories')
+                    | {{categories}}
+              .col-md-4.outer-p-2
+                strong Ratings:
+                br
+                |           Average Rating:
+                span.label.label-success {{bookInfo.averageRating}}
+                br
+                |           Ratings Count:
+                span.label.label-success {{bookInfo.ratingsCount}}
+                br
+                |           Maturity Rating:
+                span.label.label-success {{bookInfo.maturityRating.split('_').join(' ')}}
+                p
+              .col-md-3.outer-p-2
+                strong Sale Info:
+                br
+                |           Country:
+                span.label.label-success {{saleInfo.country}}
+                br
+                |           Sale Ability:
+                span.label.label-success {{ saleInfo.saleability.split('_').join(' ')}}
+                br
+                |           List Price:
+                span.label.label-success {{ saleInfo.listPrice.amount}} {{saleInfo.listPrice.currencyCode | lowercase}}
+                br
+                |           Retail Price:
+                span.label.label-success {{ saleInfo.listPrice.amount}} {{saleInfo.retailPrice.currencyCode | lowercase}}
+                p
+              .col-md-5.outer-p-2
+                br
+                br
+                br
+                md-button.md-raised.md-warn(href='{{relatedBooks.accessInfo.epub.acsTokenLink}}', target='_blank')
+                  strong Download .pdf
+                md-button.md-raised.md-warn(href='{{ bookInfo.previewLink }}', target='_blank')
+                  strong Buy this book!
+            div(ng-if="bookInfo.res==='False'")
+              | No results found.
+            #related-results.animated.bounce.related-results
+              div
+                md-card-content
+                  div(layout='row', layout-align='space-between center')
+                    span Sort by:
+                    md-select.md-no-underline(ng-model='order', placeholder='Price')
+                      md-option(value='saleInfo.listPrice.amount') low to high
+                      md-option(value='-saleInfo.listPrice.amount') high to low
+                    md-select.md-no-underline(ng-model='', placeholder='Ebooks')
+                      md-option(value='') Free books
+                      md-option(value='') Paid books
+                  |         Related Results:
+                  hr
+                  ul.rel-results
+                    li(data-ng-repeat='book in relatedBooks | orderBy: order')
+                      a(href='#', id='{{ $index + 1 }}', ng-click='update(book)') {{book.volumeInfo.title}}
+                      | ,
+                      |                {{book.saleInfo.listPrice.amount | currency}}
+          div(ng-if='!bookInfo')
+            | Failed to load resource: the server responded with a status of 403 (Forbidden)
+            br
+            br
+            br
+      // end of bookCtrl
+      // start of AppCtrl
+      .bottomLine.animated.zoomInRight
+      #popupContainer.dialogdemoBasicUsage(ng-cloak='', align='center')
+        | Copyright &copy 2017
+        span.divider
+        a(href='https://books.google.com/', target='_blank') Googlebook.com
+    
